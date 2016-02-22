@@ -44,3 +44,7 @@ group :development, :test do
   gem 'spring'
 end
 
+group :development do
+  gem 'capybara'
+end
+
