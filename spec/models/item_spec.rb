@@ -22,4 +22,8 @@ RSpec.describe Item, type: :model do
     item.description = nil
     expect(item).not_to be_valid
   end
+
+  it 'is valid' do
+    expect(item).to be_valid
+  end
 end
