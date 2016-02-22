@@ -40,7 +40,9 @@ RSpec.describe ItemsController, type: :controller do
     it "assigns all items as @items" do
       item = Item.create! valid_attributes
       get :index, {}, valid_session
-      expect(assigns(:items)).to eq([item])
+      expectedPosition = assigns(:items).size - 1
+      expectedElement = assigns(:items)[expectedPosition]
+      expect(expectedElement).to eq(item)
     end
   end
 
