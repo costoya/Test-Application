@@ -9,13 +9,17 @@ class Item < ActiveRecord::Base
 end
 
 RSpec.describe Item, type: :model do
+  let(:item) do
+    Item.new(name: 'xName', description: 'xDescription')
+  end
+
   it 'is invalid without a name' do
-    item = Item.new(name: nil)
+    item.name = nil
     expect(item).not_to be_valid
   end
 
   it 'is invalid without a description' do
-    item = Item.new(name: 'xName', description: nil)
+    item.description = nil
     expect(item).not_to be_valid
   end
 end
