@@ -70,6 +70,69 @@ describe 'Delete element', type: :feature do
   end
 end
 
+describe 'Edit element', type: :feature do
+  before(:each) do
+    Capybara.current_driver = Capybara.javascript_driver
+    time = Time.now
+    $name = 'xName' + time.inspect
+    $description = 'xDescription' + time.inspect
+    createPage($name, $description)
+    page.click_link("Back")
+  end
+
+  it 'is happy path' do
+    puts "Edit Item – Happy path"
+    nameNew = $name + "Edited"
+    descriptionNew = $description + "Edited"
+    editItem($name, $description, nameNew, descriptionNew)
+    expect(page).to have_content("Item was successfully updated.")
+  end
+
+  it 'has empty values' do
+    puts "Edit Item – Empty values"
+    editItem($name, $description, '', '')
+    expect(page).to have_content("3 errors prohibited this item from being saved:");
+  end
+
+  it 'has huge values' do
+    puts "Edit Item – Huge size"
+    nameNew = $name + '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+    descriptionNew = $description + '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
+    editItem($name, $description, nameNew, descriptionNew)
+    expect(page).to have_content("Item was successfully updated.")
+
+  end
+
+  it 'cancels editing' do
+    puts "Edit Item – Back"
+    find(:xpath, "//td[text()='" + $name + "']/..//a[contains(text(), 'Edit')]").click
+    page.click_link("Back")
+    expect(page).to have_content("Listing Items")
+  end
+
+  it 'shows the editing' do
+    puts "Edit Item – Show"
+    nameNew = $name + "Edited"
+    descriptionNew = $description + "Edited"
+    find(:xpath, "//td[text()='" + $name + "']/..//a[contains(text(), 'Edit')]").click
+    fillValues(nameNew, descriptionNew)
+    page.click_link("Show")
+    expect(page).to have_content($name)
+    expect(page).to have_content($description)
+  end
+end
+
+def fillValues(name, description)
+  page.fill_in('item_name', with: name)
+  page.fill_in('item_description', with: description)
+end
+
+def editItem(oldName, oldDescription, newName, newDescription)
+  find(:xpath, "//td[text()='" + oldName + "']/..//a[contains(text(), 'Edit')]").click
+  fillValues(newName, newDescription)
+  page.click_button("Update Item")
+end
+
 def createPage(name, description)
   visit '/items'
   page.click_link("New Item")
