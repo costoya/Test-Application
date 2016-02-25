@@ -46,12 +46,35 @@ describe 'Insert element', type: :feature do
   end
 end
 
+describe 'Delete element', type: :feature do
+  before(:each) do
+#    Capybara.current_driver = Capybara.javascript_driver
+    time = Time.now
+    $name = 'xName' + time.inspect
+    description = 'xDescription' + time.inspect
+    createPage($name, description)
+    page.click_link("Back")
+    find(:xpath, "//td[text()='"+$name+"']/..//a[contains(text(), 'Destroy')]").click
+  end
+
+  it 'is happy path' do
+    puts "Delete Item – Happy path"
+    page.driver.browser.switch_to.alert.accept
+    expect(page).to have_content("Item was successfully destroyed.")
+  end
+
+  it 'is cancelled' do
+    puts "Destroy – Cancel"
+    page.driver.browser.switch_to.alert.dismiss
+    expect(page).to have_content($name)
+  end
+end
+
 def createPage(name, description)
   visit '/items'
   page.click_link("New Item")
   url = URI.parse(current_url)
   expect(url.path).to eq("/items/new")
-  page.fill_in('item_name', with: name)
-  page.fill_in('item_description', with: description)
+  fillValues(name, description)
   page.click_button('Create Item')
 end
