@@ -30,5 +30,12 @@ module TestApplication
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    unless Rails.env.test?
+      log_level = String(ENV['LOG_LEVEL'] || "debug").upcase
+      config.logger = Logger.new(STDOUT)
+      config.logger.level = Logger.const_get(log_level)
+      config.log_level = log_level
+      config.lograge.enabled = true
+    end
   end
 end
