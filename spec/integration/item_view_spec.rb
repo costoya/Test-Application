@@ -15,26 +15,32 @@ describe 'Insert element', type: :feature do
   end
 
   it 'is happy path' do
-    Rails.logger.info('New Item – Happy path')
+    Rails.logger.info('X1, X12, X15')
     time = Time.now
     item.name = 'xName' + time.inspect
     item.description = 'xDescription' + time.inspect
     createPage(item)
     checkValid(item)
+    page.click_link('Back')
+    checkValid(item)
+    page.click_link('Show')
+    checkValid(item)
   end
 
   it 'has strange characters' do
-    Rails.logger.info('New Item – Happy path')
+    Rails.logger.info('X13, X16')
     time = Time.now
     item.name = "漢字áéñç<a href='http://www.xing.com>test</a>'" + time.inspect
     item.description = "漢字áéñç<a href='http://www.xing.com>test</a>'" + time.inspect
     createPage(item)
     checkValid(item)
+    page.click_link('Back')
+    checkValid(item)
     item.name = '漢字áéñç'
   end
 
   it 'puts empty values' do
-    Rails.logger.info('New Item – Empty values')
+    Rails.logger.info('X2')
     item.name = ''
     item.description = ''
     createPage(item)
@@ -42,16 +48,18 @@ describe 'Insert element', type: :feature do
   end
 
   it 'has Huge size' do
-    Rails.logger.info('New Item – Huge size')
+    Rails.logger.info('X3, X14, X17')
     time = Time.now
     item.name = '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' + time.inspect
     item.description = '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890' + time.inspect
     createPage(item)
     checkValid(item)
+    page.click_link('Back')
+    checkValid(item)
   end
 
   it 'is cancelled pressing back' do
-    Rails.logger.info('New Item – Back')
+    Rails.logger.info('X4')
     visit '/items'
     page.click_link('New Item')
     page.click_link('Back')
@@ -79,13 +87,13 @@ describe 'Delete element', type: :feature do
   end
 
   it 'is happy path' do
-    Rails.logger.info('Delete Item – Happy path')
+    Rails.logger.info('X5')
     page.driver.browser.switch_to.alert.accept
     expect(page).to have_content('Item was successfully destroyed.')
   end
 
   it 'is cancelled' do
-    Rails.logger.info('Destroy – Cancel')
+    Rails.logger.info('X6')
     page.driver.browser.switch_to.alert.dismiss
     expect(page).to have_content(item.name)
   end
@@ -110,7 +118,7 @@ describe 'Edit element', type: :feature do
   end
 
   it 'is happy path' do
-    Rails.logger.info('Edit Item – Happy path')
+    Rails.logger.info('X7, X19')
     itemNew = item.dup
     itemNew.name = itemNew.name + 'Edited'
     itemNew.description = itemNew.description + 'Edited'
@@ -120,7 +128,7 @@ describe 'Edit element', type: :feature do
   end
 
   it 'has empty values' do
-    Rails.logger.info('Edit Item – Empty values')
+    Rails.logger.info('X8')
     itemNew = Item.new
     itemNew.name = ''
     itemNew.description = ''
@@ -129,7 +137,7 @@ describe 'Edit element', type: :feature do
   end
 
   it 'has huge values' do
-    Rails.logger.info('Edit Item – Huge size')
+    Rails.logger.info('X9')
     itemNew = item.dup
     itemNew.name = itemNew.name + '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
     itemNew.description = itemNew.description + '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'
@@ -139,14 +147,15 @@ describe 'Edit element', type: :feature do
   end
 
   it 'cancels editing' do
-    Rails.logger.info('Edit Item – Back')
+    Rails.logger.info('X10, X12')
     find(:xpath, "//td[text()='" + item.name + "']/..//a[contains(text(), 'Edit')]").click
     page.click_link('Back')
     expect(page).to have_content('Listing Items')
+    checkValid(item)
   end
 
   it 'shows the editing' do
-    Rails.logger.info('Edit Item – Show')
+    Rails.logger.info('X11')
     itemNew = item.dup
     itemNew.name = itemNew.name + 'Edited'
     itemNew.description = itemNew.description + 'Edited'
